@@ -134,6 +134,10 @@ ISMS_sample<-ISMS %>% group_by(HOUSEHOLD_ID)%>% summarise(
 #merge the two dataset
 ISMS_sample<- merge(ISMS,ISMS_sample,by="HOUSEHOLD_ID")
 #create retention to identify whether the household retain in 2003 & 2004
-ISMS_sample$retained <-NA
-ISMS_sample$retained [ISMS_sample$purch_03>0 &ISMS_sample$purch_04>0]=1
-ISMS_sample$retained [ISMS_sample$purch_03==0 |ISMS_sample$purch_04==0]=0
+ISMS_sample$retained_03 <-NA
+ISMS_sample$retained_03[ISMS_sample$purch_03>0]=1
+ISMS_sample$retained_03[ISMS_sample$purch_03==0]=0
+
+ISMS_sample$retained_04 <-NA
+ISMS_sample$retained_04[ISMS_sample$purch_04>0]=1
+ISMS_sample$retained_04[ISMS_sample$purch_04==0]=0
