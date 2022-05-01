@@ -179,11 +179,6 @@ for (i in 1:pos_needed){
 
 os_training <- neg_corpus
 
-# Divide os_training sample to create validation sample 
-set.seed(34331)
-val_ind_os <- createDataPartition(y = os_training$ret03,p=.25,list = FALSE) 
-val_os <- os_training[val_ind,]
-os_training <- os_training[-val_ind,]
 
 ##############################
 ##  NEURAL NEWORK ANALYSIS  ##
