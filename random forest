@@ -167,7 +167,7 @@ for(i in seq(from=10,to=200,by=10)){
   cat(paste0("ntree=",i,"; 00B=",(rf_model$err.rate[i,1])),"\n")
 }
 
-rf_model <- randomForest(training[,nondates],training$ret03,ntree = 130,na.action = na.roughfix) 
+rf_model <- randomForest(training[,nondates],training$ret03,ntree = 180,na.action = na.roughfix) 
 show(rf_model)
 rf_class <- predict(rf_model,val[,nondates],type="response")
 rfconfmat <- confusionMatrix(rf_class, positive = "1",val$ret03)
@@ -197,11 +197,12 @@ os_training <- neg_corpus
 
 # Divide os_training sample to create validation sample 
 set.seed(34331)
+nondates<-c(4:8,11:40,43:44,46,48,50:51)
 val_ind_os <- createDataPartition(y = os_training$ret03,p=.25,list = FALSE) 
 val_os <- os_training[val_ind,]
 os_training <- os_training[-val_ind,]
 
-rf_model_os <- randomForest(os_training[,nondates],os_training$ret03,ntree = 130,na.action = na.roughfix) 
+rf_model_os <- randomForest(os_training[,nondates],os_training$ret03,ntree = 180,na.action = na.roughfix)
 show(rf_model_os)
 rf_class_os <- predict(rf_model_os,val_os[,nondates],type="response")
 rfconfmat_os <- confusionMatrix(rf_class_os, positive = "1",val_os$ret03)
