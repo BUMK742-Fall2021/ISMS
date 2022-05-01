@@ -21,7 +21,6 @@ library(mltools)
 library(data.table)
 
 #Read in data file ** put in your path **
-
 Transact.df<-read.csv("ISMSDataset1.csv",stringsAsFactors=FALSE)
 
 # Fix dates - Create year variable
@@ -161,8 +160,9 @@ val_ind <- createDataPartition(y = training$ret03,p=.25,list = FALSE)
 val <- training[val_ind,]
 training <- training[-val_ind,]
 
-nondates<-c(4:8,11:40,43:46,48,50:51)
-head(training[,nondates])
+colnames(training)
+nondates<-c(4:8,11:40,43:44,46,48,50:51)
+colnames(training[,nondates])
 for(i in seq(from=10,to=200,by=10)){
   rf_model <- randomForest(training[,nondates],training$ret03,ntree = i,na.action = na.roughfix)
   cat(paste0("ntree=",i,"; 00B=",(rf_model$err.rate[i,1])),"\n")
@@ -174,6 +174,42 @@ rf_class <- predict(rf_model,val[,nondates],type="response")
 rfconfmat <- confusionMatrix(rf_class, positive = "1",val$ret03)
 rfconfmat
 
+#oversampling
+pos_needed <- nrow(training[training$ret03==0,])  # at 50/50 we need as many pos as neg
+pos_corpus <- training[training$ret03==1,]
+neg_corpus <- training[training$ret03==0,]
+
+#create vector of pos_needed integers to sample the positives
+# NOTE: this is sampling WITH replacement
+
+set.seed(12345)
+drawvec <- floor(runif(pos_needed, min=1, nrow(pos_corpus)))
+
+# randomly draw from pos corpus and add to to negative to form new
+#  training set
+
+for (i in 1:pos_needed){
+  neg_corpus <- rbind(neg_corpus,pos_corpus[drawvec[i],])
+} 
+
+# "os" = oversampling
+
+os_training <- neg_corpus
+
+# Divide os_training sample to create validation sample 
+set.seed(34331)
+val_ind_os <- createDataPartition(y = os_training$ret03,p=.25,list = FALSE) 
+val_os <- os_training[val_ind,]
+os_training <- os_training[-val_ind,]
+
+rf_model <- randomForest(os_training[,nondates],os_training$ret03,ntree = 130,na.action = na.roughfix) 
+show(rf_model)
+rf_class <- predict(rf_model,val_os[,nondates],type="response")
+rfconfmat <- confusionMatrix(rf_class, positive = "1",val_os$ret03)
+rfconfmat
+
+
+
 rf_class03 <- predict(rf_model,test[,nondates],type="response")
 rfconfmat <- confusionMatrix(rf_class03, positive = "1",test$ret03)
 rfconfmat
@@ -181,7 +217,6 @@ rfconfmat
 rf_class04 <- predict(rf_model,test[,nondates],type="response")
 rfconfmat <- confusionMatrix(rf_class04, positive = "1",test$ret04)
 rfconfmat
-
 
 
 
