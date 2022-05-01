@@ -202,26 +202,8 @@ val_ind_os <- createDataPartition(y = os_training$ret03,p=.25,list = FALSE)
 val_os <- os_training[val_ind,]
 os_training <- os_training[-val_ind,]
 
-rf_model <- randomForest(os_training[,nondates],os_training$ret03,ntree = 130,na.action = na.roughfix) 
-show(rf_model)
-rf_class <- predict(rf_model,val_os[,nondates],type="response")
+rf_model_os <- randomForest(os_training[,nondates],os_training$ret03,ntree = 130,na.action = na.roughfix) 
+show(rf_model_os)
+rf_class <- predict(rf_model_os,val_os[,nondates],type="response")
 rfconfmat <- confusionMatrix(rf_class, positive = "1",val_os$ret03)
 rfconfmat
-
-
-
-rf_class03 <- predict(rf_model,test[,nondates],type="response")
-rfconfmat <- confusionMatrix(rf_class03, positive = "1",test$ret03)
-rfconfmat
-
-rf_class04 <- predict(rf_model,test[,nondates],type="response")
-rfconfmat <- confusionMatrix(rf_class04, positive = "1",test$ret04)
-rfconfmat
-
-
-
-
-
-
-
-
